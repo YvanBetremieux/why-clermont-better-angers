@@ -1,27 +1,3 @@
-// Variables globales
-let currentArticleIndex = 0;
-let articles = [];
-let isAnimating = false;
-
-// Initialisation
-function initializeCards() {
-    // Récupère tous les articles
-    articles = Array.from(document.querySelectorAll('.card'));
-    
-    // Configure le premier article
-    if (articles.length > 0) {
-        articles[0].classList.add('active');
-        animateListItems(articles[0].querySelectorAll('li'));
-    }
-    
-    // Crée la navigation
-    createNavigationControls();
-    
-    // Ajoute le support clavier
-    addKeyboardSupport();
-}
-
-// Création des contrôles de navigation
 function createNavigationControls() {
     const nav = document.createElement('div');
     nav.className = 'navigation-controls';
@@ -32,31 +8,28 @@ function createNavigationControls() {
             </svg>
             Suivant
         </button>
-        <div class="progress-indicator">
-            <span class="current">1</span>/<span class="total">${articles.length}</span>
-        </div>
     `;
     
     document.body.appendChild(nav);
     nav.querySelector('.next').addEventListener('click', showNextCard);
 }
 
-// Animation des éléments de liste
-function animateListItems(items) {
-    items = Array.from(items);
-    items.forEach((item, index) => {
-        // Reset de l'état
-        item.classList.remove('visible');
-        
-        // Animation avec délai
-        setTimeout(() => {
-            item.classList.add('visible');
-        }, index * 150);
-    });
+function createGifCard(gifData) {
+    const gifCard = document.createElement('div');
+    gifCard.className = 'card gif-card';
+    gifCard.innerHTML = `
+        <img src="${gifData.url}" alt="GIF humoristique" class="reaction-gif">
+        <p class="gif-caption">${gifData.caption}</p>
+    `;
+    return gifCard;
 }
 
-// Affichage de la carte suivante
-function showNextCard() {
+function shouldShowGif() {
+    // Montre un GIF toutes les 3 cartes avec 70% de chance
+    return currentArticleIndex % 3 === 2 && Math.random() < 0.7;
+}
+
+async function showNextCard() {
     if (isAnimating) return;
     isAnimating = true;
 
@@ -68,48 +41,51 @@ function showNextCard() {
     currentCard.style.opacity = '0';
     currentCard.style.transform = 'translateX(-100px)';
 
+    // Vérifie si on doit montrer un GIF
+    if (shouldShowGif()) {
+        await showGifInterlude();
+    }
+
     setTimeout(() => {
-        // Cache la carte actuelle
         currentCard.classList.remove('active');
         currentCard.style.display = 'none';
-
-        // Prépare la nouvelle carte
+        
         nextCard.style.display = 'block';
         nextCard.style.transform = 'translateX(50px)';
         nextCard.style.opacity = '0';
-
-        // Force un reflow
-        nextCard.offsetHeight;
-
-        // Affiche la nouvelle carte
+        
+        nextCard.offsetHeight; // Force reflow
+        
         nextCard.classList.add('active');
         nextCard.style.transform = '';
         nextCard.style.opacity = '';
-
-        // Anime les éléments de la liste
+        
         animateListItems(nextCard.querySelectorAll('li'));
-
-        // Met à jour l'index et l'indicateur
+        
         currentArticleIndex = nextIndex;
-        updateProgress();
-
         isAnimating = false;
     }, 500);
 }
 
-// Mise à jour de l'indicateur de progression
-function updateProgress() {
-    document.querySelector('.current').textContent = currentArticleIndex + 1;
-}
-
-// Support clavier
-function addKeyboardSupport() {
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' || e.code === 'ArrowRight') {
-            e.preventDefault();
-            showNextCard();
-        }
-    });
+async function showGifInterlude() {
+    const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+    const gifCard = createGifCard(randomGif);
+    
+    document.querySelector('.card-container').appendChild(gifCard);
+    
+    await new Promise(resolve => setTimeout(() => {
+        gifCard.classList.add('active');
+        
+        setTimeout(() => {
+            gifCard.style.opacity = '0';
+            gifCard.style.transform = 'translateX(-100px)';
+            
+            setTimeout(() => {
+                gifCard.remove();
+                resolve();
+            }, 500);
+        }, 2000);
+    }, 0));
 }
 
 // Gestion du swipe sur mobile
