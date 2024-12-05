@@ -220,3 +220,33 @@ footer .container {
         width: min(100% - 2rem, 1200px); 
     }
 }
+
+/* Styles de base pour les éléments animés */
+.animate-section {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+li {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Classes pour les éléments visibles */
+.animate-section.visible,
+li.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Désactive les animations si l'utilisateur préfère les mouvements réduits */
+@media (prefers-reduced-motion: reduce) {
+    .animate-section,
+    li {
+        transition: none;
+        opacity: 1;
+        transform: none;
+    }
+}
