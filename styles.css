@@ -185,6 +185,11 @@ main {
     color: var(--accent);
 }
 
+li::marker {
+    display: none;
+    content: "";
+}
+
 /* GIF cards */
 .gif-card {
     text-align: center;
@@ -251,6 +256,7 @@ footer {
     text-align: center;
     width: 100%;
     margin-top: auto;
+    margin-bottom: -20em;
 }
 
 /* Media Queries */
