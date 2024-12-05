@@ -1,8 +1,9 @@
+// Variables globales
 let currentArticleIndex = 0;
 let articles = [];
 let isAnimating = false;
 
-// Collection de GIFs amusants en rapport avec la thématique
+// Collection de GIFs
 const gifs = [
     {
         url: "https://media1.giphy.com/media/3o7TKOQ4Z2vOGZ1GbC/giphy.gif",
@@ -18,6 +19,7 @@ const gifs = [
     }
 ];
 
+// Initialisation des cartes
 function initializeCards() {
     articles = Array.from(document.querySelectorAll('.card'));
     
@@ -28,8 +30,10 @@ function initializeCards() {
     
     createNavigationControls();
     addKeyboardSupport();
+    addTouchSupport();
 }
 
+// Création des contrôles de navigation
 function createNavigationControls() {
     const nav = document.createElement('div');
     nav.className = 'navigation-controls';
@@ -46,6 +50,18 @@ function createNavigationControls() {
     nav.querySelector('.next').addEventListener('click', showNextCard);
 }
 
+// Animation des items de liste
+function animateListItems(items) {
+    items = Array.from(items);
+    items.forEach((item, index) => {
+        item.classList.remove('visible');
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, index * 150);
+    });
+}
+
+// Création d'une carte GIF
 function createGifCard(gifData) {
     const gifCard = document.createElement('div');
     gifCard.className = 'card gif-card';
@@ -56,11 +72,34 @@ function createGifCard(gifData) {
     return gifCard;
 }
 
+// Vérification si on doit montrer un GIF
 function shouldShowGif() {
-    // Montre un GIF toutes les 3 cartes avec 70% de chance
     return currentArticleIndex % 3 === 2 && Math.random() < 0.7;
 }
 
+// Affichage du GIF intermédiaire
+async function showGifInterlude() {
+    const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+    const gifCard = createGifCard(randomGif);
+    
+    document.querySelector('.card-container').appendChild(gifCard);
+    
+    return new Promise(resolve => setTimeout(() => {
+        gifCard.classList.add('active');
+        
+        setTimeout(() => {
+            gifCard.style.opacity = '0';
+            gifCard.style.transform = 'translateX(-100px)';
+            
+            setTimeout(() => {
+                gifCard.remove();
+                resolve();
+            }, 500);
+        }, 2000);
+    }, 0));
+}
+
+// Affichage de la carte suivante
 async function showNextCard() {
     if (isAnimating) return;
     isAnimating = true;
@@ -69,11 +108,9 @@ async function showNextCard() {
     const nextIndex = (currentArticleIndex + 1) % articles.length;
     const nextCard = articles[nextIndex];
 
-    // Animation de sortie de la carte actuelle
     currentCard.style.opacity = '0';
     currentCard.style.transform = 'translateX(-100px)';
 
-    // Vérifie si on doit montrer un GIF
     if (shouldShowGif()) {
         await showGifInterlude();
     }
@@ -99,25 +136,41 @@ async function showNextCard() {
     }, 500);
 }
 
-async function showGifInterlude() {
-    const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
-    const gifCard = createGifCard(randomGif);
-    
-    document.querySelector('.card-container').appendChild(gifCard);
-    
-    await new Promise(resolve => setTimeout(() => {
-        gifCard.classList.add('active');
-        
-        setTimeout(() => {
-            gifCard.style.opacity = '0';
-            gifCard.style.transform = 'translateX(-100px)';
-            
-            setTimeout(() => {
-                gifCard.remove();
-                resolve();
-            }, 500);
-        }, 2000);
-    }, 0));
+// Support du clavier
+function addKeyboardSupport() {
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowRight') {
+            e.preventDefault();
+            showNextCard();
+        }
+    });
 }
 
+// Support tactile
+function addTouchSupport() {
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const swipeDistance = touchStartX - touchEndX;
+        
+        if (Math.abs(swipeDistance) > swipeThreshold) {
+            if (swipeDistance > 0) {
+                showNextCard();
+            }
+        }
+    }
+}
+
+// Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initializeCards);
