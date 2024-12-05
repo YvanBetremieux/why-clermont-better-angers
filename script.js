@@ -1,3 +1,35 @@
+let currentArticleIndex = 0;
+let articles = [];
+let isAnimating = false;
+
+// Collection de GIFs amusants en rapport avec la thématique
+const gifs = [
+    {
+        url: "https://media1.giphy.com/media/3o7TKOQ4Z2vOGZ1GbC/giphy.gif",
+        caption: "Quand un Angevin découvre le Puy de Dôme..."
+    },
+    {
+        url: "https://media2.giphy.com/media/3oz8xZMZox78ZbWbFC/giphy.gif",
+        caption: "L'ASM qui arrive au stade..."
+    },
+    {
+        url: "https://media3.giphy.com/media/S9i8jJxTvAKVHVMvvW/giphy.gif",
+        caption: "Les volcans d'Auvergne be like..."
+    }
+];
+
+function initializeCards() {
+    articles = Array.from(document.querySelectorAll('.card'));
+    
+    if (articles.length > 0) {
+        articles[0].classList.add('active');
+        animateListItems(articles[0].querySelectorAll('li'));
+    }
+    
+    createNavigationControls();
+    addKeyboardSupport();
+}
+
 function createNavigationControls() {
     const nav = document.createElement('div');
     nav.className = 'navigation-controls';
@@ -88,30 +120,4 @@ async function showGifInterlude() {
     }, 0));
 }
 
-// Gestion du swipe sur mobile
-function addTouchSupport() {
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    document.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        if (touchStartX - touchEndX > swipeThreshold) {
-            showNextCard();
-        }
-    }
-}
-
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    initializeCards();
-    addTouchSupport();
-});
+document.addEventListener('DOMContentLoaded', initializeCards);
