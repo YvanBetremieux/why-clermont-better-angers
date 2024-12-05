@@ -275,16 +275,31 @@ footer {
 
     header {
         padding: var(--spacing-sm) 0;
+        transition: opacity 0.3s ease;
     }
 
     .card {
         padding: var(--spacing-md);
         margin: 0;
         border-radius: 0;
+        min-height: 100vh; /* Les cartes prennent toute la hauteur sur mobile */
+        padding-top: var(--spacing-sm);
+        padding-bottom: calc(var(--spacing-lg) * 2); /* Espace pour la navigation */
+    }
+
+    footer {
+        transition: opacity 0.3s ease;
+    }
+
+    .card {
+        min-height: 100vh; /* Les cartes prennent toute la hauteur sur mobile */
+        padding-top: var(--spacing-sm);
+        padding-bottom: calc(var(--spacing-lg) * 2); /* Espace pour la navigation */
     }
 
     main.container {
         padding: 0;
+        min-height: 100vh;
     }
 
     .card-container {
