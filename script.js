@@ -33,7 +33,17 @@ function createNavigationButtons() {
     nav.querySelector('.next').addEventListener('click', showNextCard);
 }
 
-async function showNextCard() {
+
+function animateListItems(items) {
+    items = Array.from(items);
+    items.forEach((item, index) => {
+        setTimeout(() => {
+            item.classList.add('visible');
+        }, index * 150); // Délai plus long pour un effet plus marqué
+    });
+}
+
+function showNextCard() {
     if (isAnimating) return;
     isAnimating = true;
 
@@ -41,20 +51,28 @@ async function showNextCard() {
     const nextIndex = (currentArticleIndex + 1) % articles.length;
     const nextCard = articles[nextIndex];
 
+    // Reset des animations de la liste actuelle
+    currentCard.querySelectorAll('li').forEach(li => {
+        li.classList.remove('visible');
+    });
+
     // Animation de sortie
-    currentCard.style.transform = 'translateX(-100px)';
     currentCard.style.opacity = '0';
-    
+    currentCard.style.transform = 'translateX(-100px)';
+
     setTimeout(() => {
-        currentCard.classList.remove('active');
-        nextCard.classList.add('active');
-        nextCard.style.transform = 'translateX(0)';
-        nextCard.style.opacity = '1';
+        currentCard.style.display = 'none';
+        nextCard.style.display = 'block';
         
-        // Anime les éléments de liste
+        // Force un reflow
+        nextCard.offsetHeight;
+        
+        nextCard.classList.add('active');
+        
+        // Anime les éléments de la liste
         animateListItems(nextCard.querySelectorAll('li'));
         
-        // Met à jour l'index et l'indicateur
+        // Met à jour l'index
         currentArticleIndex = nextIndex;
         document.querySelector('.current').textContent = currentArticleIndex + 1;
         
@@ -62,17 +80,5 @@ async function showNextCard() {
     }, 500);
 }
 
-function animateListItems(items) {
-    items = Array.from(items);
-    items.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-20px)';
-        
-        setTimeout(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        }, index * 100 + 300);
-    });
-}
 
 document.addEventListener('DOMContentLoaded', initializeCards);
