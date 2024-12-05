@@ -49,19 +49,17 @@ body {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 max(var(--container-padding), 5vw); 
+    padding: 0 max(var(--container-padding), 5vw);
 }
 
 /* Header */
 header {
     background: var(--primary);
     color: white;
-    padding: clamp(2rem, 10vh, 6rem) 0;
+    padding: clamp(2rem, 10vh, 6rem) max(var(--container-padding), 5vw);
     text-align: center;
     position: relative;
     margin-bottom: 4rem;
-    padding: clamp(2rem, 10vh, 6rem) max(var(--container-padding), 5vw);
-
 }
 
 header::after {
@@ -76,6 +74,7 @@ header::after {
     z-index: -1;
 }
 
+/* Typography */
 h1 {
     font-size: var(--font-size-h1);
     margin-bottom: 1rem;
@@ -83,36 +82,6 @@ h1 {
     line-height: 1.2;
 }
 
-/* Main content */
-main {
-    display: grid;
-    gap: 2rem;
-    margin: 2rem;
-}
-main.container {
-    margin-top: 2rem;
-    margin-bottom: 4rem;
-    width: min(100% - 3rem, 1200px);
-}
-
-article {
-    transition: opacity 0.3s ease-in-out;
-}
-
-/* Cards */
-.card {
-    background: white;
-    border-radius: var(--card-border-radius);
-    padding: var(--section-padding);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform var(--transition-speed) var(--transition-timing);
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-/* Typography */
 h2 {
     color: var(--primary);
     font-size: var(--font-size-h2);
@@ -135,20 +104,62 @@ h2::after {
 h3 {
     color: var(--accent);
     font-size: var(--font-size-h3);
-    margin: 1.5rem 0 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Main content and Card Container */
+main.container {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    width: min(100% - 3rem, 1200px);
+}
+
+.card-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+/* Card styles */
+.card {
+    background: white;
+    border-radius: var(--card-border-radius);
+    padding: var(--section-padding);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    position: absolute;
+    opacity: 0;
+    transform: translateX(100px);
+    display: none;
+}
+
+.card.active {
+    opacity: 1;
+    transform: translateX(0);
+    display: block;
 }
 
 /* Lists */
-ol {
+.card ol {
     list-style-position: inside;
-    padding-left: 1rem;
+    padding-left: 0;
 }
 
-li {
+.card li {
     margin-bottom: 1rem;
-    position: relative;
-    padding-left: 1rem;
-    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease-out;
+}
+
+.card li.visible {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 li:hover {
@@ -156,19 +167,7 @@ li:hover {
     color: var(--secondary);
 }
 
-/* Footer */
-footer {
-    background: var(--primary);
-    color: white;
-    text-align: center;
-    padding: 2rem 0;
-}
-
-footer .container {
-    padding: 2rem max(var(--container-padding), 5vw);
-}
-
-/* Contrôles de navigation */
+/* Navigation controls */
 .navigation-controls {
     position: fixed;
     bottom: 2rem;
@@ -176,9 +175,10 @@ footer .container {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: var(--primary);
+    background: rgba(44, 62, 80, 0.9);
     padding: 1rem;
     border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -211,7 +211,30 @@ footer .container {
     font-weight: 500;
 }
 
-/* Responsive design pour les contrôles */
+/* Footer */
+footer {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+footer .container {
+    padding: 2rem max(var(--container-padding), 5vw);
+}
+
+/* Media Queries */
+@media (max-width: 480px) {
+    main.container {
+        width: min(100% - 2rem, 1200px);
+    }
+    
+    .card {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
 @media (max-width: 768px) {
     .navigation-controls {
         bottom: 1rem;
@@ -219,36 +242,22 @@ footer .container {
         left: 1rem;
         justify-content: space-between;
     }
-}
 
-/* Responsive design */
-@media (max-width: 480px) {
-    ol {
-        padding-left: 0;
-    }
-    
-    li {
-        padding-left: 0.5rem;
-    }
-    
     .card {
-        padding: 1rem;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    main {
-        gap: 1.5rem;
-    }
-    
-    .card {
+        margin: 1rem;
         padding: 1.5rem;
     }
+
+    .card h2 {
+        font-size: 1.5rem;
+    }
 }
 
-@media (min-width: 769px) {
-    main {
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr));
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
     }
 }
 
@@ -261,49 +270,5 @@ footer .container {
     
     header::after {
         display: none;
-    }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
-@media (max-width: 480px) {
-    main.container {
-        width: min(100% - 2rem, 1200px); 
-    }
-}
-
-/* Styles de base pour les éléments animés */
-.animate-section {
-    opacity: 0;
-    transform: translateX(-50px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-li {
-    opacity: 0;
-    transform: translateX(-30px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Classes pour les éléments visibles */
-.animate-section.visible,
-li.visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* Désactive les animations si l'utilisateur préfère les mouvements réduits */
-@media (prefers-reduced-motion: reduce) {
-    .animate-section,
-    li {
-        transition: none;
-        opacity: 1;
-        transform: none;
     }
 }
