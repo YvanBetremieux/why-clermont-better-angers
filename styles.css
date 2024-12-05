@@ -1,12 +1,14 @@
 /* Variables */
 :root {
-    /* Couleurs */
-    --primary: #2F4F4F;     /* Ardoise */
-    --secondary: #8B8B83;   /* Kaki */
-    --background: #F5F5DC;  /* Beige */
-    --text: #2F4F4F;        /* Ardoise */
-    --accent: #9B9B8C;      /* Kaki clair */
-    --card-bg: #FFFFFF;     /* Blanc */
+    /* Palette de couleurs */
+    --primary: #1a4b84;      /* Bleu marine profond */
+    --secondary: #4682B4;    /* Bleu acier */
+    --background: #f0f8ff;   /* Bleu glacé très clair */
+    --text: #2c405e;        /* Bleu nuit pour le texte */
+    --accent: #5d9bc9;      /* Bleu ciel vif */
+    --card-bg: #ffffff;     /* Blanc */
+    --hover: #6ea4ca;       /* Bleu clair pour les survols */
+    --nav-bg: rgba(26, 75, 132, 0.9); /* Bleu marine semi-transparent */
     
     /* Espacements */
     --spacing-xs: 0.5rem;
@@ -19,10 +21,6 @@
     --font-size-base: clamp(1rem, 1.5vw, 1.125rem);
     --font-size-h1: clamp(2rem, 5vw, 3.5rem);
     --font-size-h2: clamp(1.5rem, 3vw, 2.5rem);
-    
-    /* Layout */
-    --container-width: min(1200px, 95%);
-    --card-border-radius: 1.5rem;
 }
 
 /* Reset */
@@ -41,12 +39,12 @@ body {
     font-size: var(--font-size-base);
     min-height: 100vh;
     position: relative;
-    padding-bottom: 100px; /* Espace pour la navigation fixe */
+    padding-bottom: 100px;
 }
 
 /* Container */
 .container {
-    width: var(--container-width);
+    width: min(1200px, 95%);
     margin: 0 auto;
     padding: 0 var(--spacing-md);
     position: relative;
@@ -54,7 +52,7 @@ body {
 
 /* Header */
 header {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: var(--card-bg);
     padding: var(--spacing-xl) 0;
     margin-bottom: var(--spacing-xl);
@@ -74,10 +72,30 @@ header::after {
     z-index: -1;
 }
 
+/* Typography */
 h1 {
     font-size: var(--font-size-h1);
     font-weight: 800;
     margin-bottom: var(--spacing-sm);
+}
+
+h2 {
+    font-size: var(--font-size-h2);
+    color: var(--primary);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    padding-bottom: var(--spacing-xs);
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 2px;
 }
 
 /* Main et Card Container */
@@ -97,10 +115,10 @@ main {
 /* Cards */
 .card {
     background: var(--card-bg);
-    border-radius: var(--card-border-radius);
+    border-radius: 1.5rem;
     padding: var(--spacing-lg);
-    box-shadow: 0 8px 32px rgba(47, 79, 79, 0.1);
-    border: 1px solid rgba(139, 139, 131, 0.1);
+    box-shadow: 0 8px 32px rgba(26, 75, 132, 0.1);
+    border: 1px solid rgba(70, 130, 180, 0.1);
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
@@ -116,76 +134,14 @@ main {
     transform: translateX(0);
 }
 
-.card h2 {
-    color: var(--primary);
-    font-size: var(--font-size-h2);
-    margin-bottom: var(--spacing-lg);
-    position: relative;
-    padding-bottom: var(--spacing-xs);
-}
-
-.card h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: var(--secondary);
-    border-radius: 2px;
-}
-
-/* Lists */
-.card ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.card ul li {
+/* Points */
+.point {
     margin-bottom: var(--spacing-md);
     padding-left: var(--spacing-lg);
     position: relative;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card ul li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.5rem;
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    transform: scale(0);
-    transition: transform 0.3s ease;
-}
-
-.card ul li.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.card ul li.visible::before {
-    transform: scale(1);
-}
-
-.card ul li:hover {
-    transform: translateX(10px);
-    color: var(--primary);
-}
-
-.card ul li:hover::before {
-    background: var(--primary);
-}
-
-.point {
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-lg);
-    position: relative;
 }
 
 .point::before {
@@ -201,13 +157,16 @@ main {
     transition: transform 0.3s ease;
 }
 
+.point.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .point.visible::before {
     transform: scale(1);
 }
 
 .point .main {
-    font-size: 1.1em;
-    color: var(--text);
     margin-bottom: 0.5rem;
 }
 
@@ -226,29 +185,7 @@ main {
     color: var(--accent);
 }
 
-.point:hover .main {
-    color: var(--primary);
-}
-
-.point:hover .versus {
-    color: var(--secondary);
-}
-
-/* Navigation */
-.navigation-controls {
-    position: fixed;
-    bottom: var(--spacing-lg);
-    right: var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    background: rgba(47, 79, 79, 0.9);
-    padding: var(--spacing-sm);
-    border-radius: var(--spacing-sm);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-}
-/* Styles pour les cartes GIF */
+/* GIF cards */
 .gif-card {
     text-align: center;
     padding: var(--spacing-lg);
@@ -263,16 +200,30 @@ main {
 
 .gif-caption {
     font-size: 1.2em;
-    color: var(--primary);
+    color: var(--text);
     font-weight: 500;
-    margin-top: var(--spacing-sm);
+}
+
+/* Navigation */
+.navigation-controls {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--nav-bg);
+    padding: var(--spacing-sm);
+    border-radius: var(--spacing-sm);
+    backdrop-filter: blur(10px);
+    z-index: 10;
 }
 
 .nav-button {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    background: var(--secondary);
+    background: var(--accent);
     color: var(--card-bg);
     border: none;
     padding: var(--spacing-sm) var(--spacing-md);
@@ -283,7 +234,7 @@ main {
 }
 
 .nav-button:hover {
-    background: var(--primary);
+    background: var(--hover);
     transform: translateY(-2px);
 }
 
@@ -292,22 +243,9 @@ main {
     height: 20px;
 }
 
-.nav-button.prev svg {
-    margin-right: var(--spacing-xs);
-}
-
-.nav-button.next svg {
-    margin-left: var(--spacing-xs);
-}
-
-.progress-indicator {
-    color: var(--card-bg);
-    font-weight: 500;
-}
-
 /* Footer */
 footer {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: var(--card-bg);
     padding: var(--spacing-lg) 0;
     text-align: center;
@@ -324,17 +262,13 @@ footer {
         justify-content: space-between;
     }
 
-    .nav-button {
-        padding: var(--spacing-sm);
-    }
-    
-    .nav-button span {
-        display: none; /* Cache le texte sur mobile */
-    }
-
     .card {
         margin: var(--spacing-sm);
         padding: var(--spacing-md);
+    }
+
+    .nav-button {
+        padding: var(--spacing-sm);
     }
 }
 
@@ -347,5 +281,21 @@ footer {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .card {
+        break-inside: avoid;
+        box-shadow: none;
+    }
+    
+    header::after {
+        display: none;
+    }
+    
+    .navigation-controls {
+        display: none;
     }
 }
