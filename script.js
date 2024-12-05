@@ -3,29 +3,16 @@ let currentArticleIndex = 0;
 let articles = [];
 let isAnimating = false;
 
-// Collection de GIFs
-const gifs = [
-    {
-        url: "https://media1.giphy.com/media/3o7TKOQ4Z2vOGZ1GbC/giphy.gif",
-        caption: "Quand un Angevin découvre le Puy de Dôme..."
-    },
-    {
-        url: "https://media2.giphy.com/media/3oz8xZMZox78ZbWbFC/giphy.gif",
-        caption: "L'ASM qui arrive au stade..."
-    },
-    {
-        url: "https://media3.giphy.com/media/S9i8jJxTvAKVHVMvvW/giphy.gif",
-        caption: "Les volcans d'Auvergne be like..."
-    }
-];
-
 // Initialisation des cartes
 function initializeCards() {
     articles = Array.from(document.querySelectorAll('.card'));
     
     if (articles.length > 0) {
         articles[0].classList.add('active');
-        animateListItems(articles[0].querySelectorAll('li'));
+        // Si ce n'est pas une carte GIF, anime les items de liste
+        if (!articles[0].classList.contains('gif-card')) {
+            animateListItems(articles[0].querySelectorAll('li'));
+        }
     }
     
     createNavigationControls();
@@ -52,6 +39,7 @@ function createNavigationControls() {
 
 // Animation des items de liste
 function animateListItems(items) {
+    if (!items) return;
     items = Array.from(items);
     items.forEach((item, index) => {
         item.classList.remove('visible');
@@ -61,46 +49,8 @@ function animateListItems(items) {
     });
 }
 
-// Création d'une carte GIF
-function createGifCard(gifData) {
-    const gifCard = document.createElement('div');
-    gifCard.className = 'card gif-card';
-    gifCard.innerHTML = `
-        <img src="${gifData.url}" alt="GIF humoristique" class="reaction-gif">
-        <p class="gif-caption">${gifData.caption}</p>
-    `;
-    return gifCard;
-}
-
-// Vérification si on doit montrer un GIF
-function shouldShowGif() {
-    return currentArticleIndex % 3 === 2 && Math.random() < 0.7;
-}
-
-// Affichage du GIF intermédiaire
-async function showGifInterlude() {
-    const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
-    const gifCard = createGifCard(randomGif);
-    
-    document.querySelector('.card-container').appendChild(gifCard);
-    
-    return new Promise(resolve => setTimeout(() => {
-        gifCard.classList.add('active');
-        
-        setTimeout(() => {
-            gifCard.style.opacity = '0';
-            gifCard.style.transform = 'translateX(-100px)';
-            
-            setTimeout(() => {
-                gifCard.remove();
-                resolve();
-            }, 500);
-        }, 2000);
-    }, 0));
-}
-
 // Affichage de la carte suivante
-async function showNextCard() {
+function showNextCard() {
     if (isAnimating) return;
     isAnimating = true;
 
@@ -110,10 +60,6 @@ async function showNextCard() {
 
     currentCard.style.opacity = '0';
     currentCard.style.transform = 'translateX(-100px)';
-
-    if (shouldShowGif()) {
-        await showGifInterlude();
-    }
 
     setTimeout(() => {
         currentCard.classList.remove('active');
@@ -129,14 +75,17 @@ async function showNextCard() {
         nextCard.style.transform = '';
         nextCard.style.opacity = '';
         
-        animateListItems(nextCard.querySelectorAll('li'));
+        // Anime les items de liste seulement si ce n'est pas une carte GIF
+        if (!nextCard.classList.contains('gif-card')) {
+            animateListItems(nextCard.querySelectorAll('li'));
+        }
         
         currentArticleIndex = nextIndex;
         isAnimating = false;
     }, 500);
 }
 
-// Support du clavier
+// Support du clavier et tactile (reste identique)
 function addKeyboardSupport() {
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' || e.code === 'ArrowRight') {
@@ -146,7 +95,6 @@ function addKeyboardSupport() {
     });
 }
 
-// Support tactile
 function addTouchSupport() {
     let touchStartX = 0;
     let touchEndX = 0;
