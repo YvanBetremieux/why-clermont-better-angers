@@ -1,42 +1,139 @@
+/* Variables */
 :root {
-    /* Nouvelle palette */
-    --primary: #2F4F4F;     /* Ardoise foncé */
-    --secondary: #8B8B83;   /* Kaki gris */
-    --background: #F5F5DC;  /* Beige clair */
-    --text: #2F4F4F;        /* Ardoise pour le texte */
+    /* Couleurs */
+    --primary: #2F4F4F;     /* Ardoise */
+    --secondary: #8B8B83;   /* Kaki */
+    --background: #F5F5DC;  /* Beige */
+    --text: #2F4F4F;        /* Ardoise */
     --accent: #9B9B8C;      /* Kaki clair */
-    --card-bg: #FFFFFF;     /* Blanc pour les cartes */
+    --card-bg: #FFFFFF;     /* Blanc */
     
-    /* Layout */
-    --container-padding: clamp(1rem, 5vw, 2rem);
-    --section-padding: clamp(1.5rem, 3vw, 2.5rem);
-    --card-border-radius: 1.5rem;
+    /* Espacements */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
     
     /* Typography */
     --font-size-base: clamp(1rem, 1.5vw, 1.125rem);
     --font-size-h1: clamp(2rem, 5vw, 3.5rem);
     --font-size-h2: clamp(1.5rem, 3vw, 2.5rem);
+    
+    /* Layout */
+    --container-width: min(1200px, 95%);
+    --card-border-radius: 1.5rem;
 }
 
-/* Mise à jour des styles de la carte */
+/* Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base */
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+}
+
+.container {
+    width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Header */
+header {
+    background: var(--primary);
+    color: var(--card-bg);
+    padding: var(--spacing-xl) 0;
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    text-align: center;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: -2rem;
+    left: 0;
+    right: 0;
+    height: 4rem;
+    background: inherit;
+    transform: skewY(-3deg);
+    z-index: -1;
+}
+
+h1 {
+    font-size: var(--font-size-h1);
+    font-weight: 800;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Card Container */
+.card-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) 0;
+    position: relative;
+}
+
+/* Cards */
 .card {
     background: var(--card-bg);
     border-radius: var(--card-border-radius);
-    padding: var(--section-padding);
+    padding: var(--spacing-lg);
     box-shadow: 0 8px 32px rgba(47, 79, 79, 0.1);
     border: 1px solid rgba(139, 139, 131, 0.1);
+    width: 100%;
+    max-width: 800px;
+    position: absolute;
+    opacity: 0;
+    transform: translateX(50px);
+    display: none;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Style moderne pour les listes */
+.card.active {
+    opacity: 1;
+    transform: translateX(0);
+    display: block;
+}
+
+.card h2 {
+    color: var(--primary);
+    font-size: var(--font-size-h2);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    padding-bottom: var(--spacing-xs);
+}
+
+.card h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--secondary);
+    border-radius: 2px;
+}
+
+/* Lists */
 .card ul {
     list-style: none;
-    padding: 0;
 }
 
 .card ul li {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
     position: relative;
     opacity: 0;
     transform: translateY(20px);
@@ -65,7 +162,6 @@
     transform: scale(1);
 }
 
-/* Hover effects */
 .card ul li:hover {
     transform: translateX(10px);
     color: var(--primary);
@@ -75,41 +171,77 @@
     background: var(--primary);
 }
 
-/* Mise à jour des styles globaux */
-body {
-    background: var(--background);
-    color: var(--text);
-}
-
-header {
-    background: var(--primary);
-}
-
+/* Navigation */
 .navigation-controls {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
     background: rgba(47, 79, 79, 0.9);
+    padding: var(--spacing-sm);
+    border-radius: var(--spacing-sm);
     backdrop-filter: blur(10px);
+    z-index: 10;
 }
 
 .nav-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
     background: var(--secondary);
+    color: var(--card-bg);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--spacing-xs);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .nav-button:hover {
     background: var(--primary);
+    transform: translateY(-2px);
 }
 
-/* Animation d'apparition des cartes */
-.card.active {
-    animation: cardAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.progress-indicator {
+    color: var(--card-bg);
+    font-weight: 500;
 }
 
-@keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+/* Footer */
+footer {
+    background: var(--primary);
+    color: var(--card-bg);
+    padding: var(--spacing-lg) 0;
+    margin-top: var(--spacing-xl);
+    text-align: center;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .navigation-controls {
+        left: var(--spacing-sm);
+        right: var(--spacing-sm);
+        bottom: var(--spacing-sm);
+        justify-content: space-between;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .card {
+        margin: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
