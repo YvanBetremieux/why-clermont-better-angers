@@ -17,6 +17,27 @@ function initializeCards() {
     createNavigationControls();
     addKeyboardSupport();
     addTouchSupport();
+    updateHeaderFooterVisibility();
+}
+
+function updateHeaderFooterVisibility() {
+    const header = document.querySelector('header');
+    const footer = document.querySelector('footer');
+    const firstCard = articles[0];
+    const currentCard = articles[currentArticleIndex];
+    
+    if (window.innerWidth <= 768) {
+        if (currentCard === firstCard) {
+            header.style.display = 'block';
+            footer.style.display = 'block';
+        } else {
+            header.style.display = 'none';
+            footer.style.display = 'none';
+        }
+    } else {
+        header.style.display = 'block';
+        footer.style.display = 'block';
+    }
 }
 
 // Création des contrôles de navigation
@@ -96,8 +117,12 @@ function changeCard(direction) {
         
         currentArticleIndex = nextIndex;
         isAnimating = false;
+
+        updateHeaderFooterVisibility();
     }, 500);
 }
+
+window.addEventListener('resize', updateHeaderFooterVisibility);
 
 // Support du clavier
 function addKeyboardSupport() {
