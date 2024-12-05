@@ -9,7 +9,6 @@ function initializeCards() {
     
     if (articles.length > 0) {
         articles[0].classList.add('active');
-        // Si ce n'est pas une carte GIF, anime les items de liste
         if (!articles[0].classList.contains('gif-card')) {
             animateListItems(articles[0].querySelectorAll('li'));
         }
@@ -25,6 +24,12 @@ function createNavigationControls() {
     const nav = document.createElement('div');
     nav.className = 'navigation-controls';
     nav.innerHTML = `
+        <button class="nav-button prev">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Précédent
+        </button>
         <button class="nav-button next">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M9 18l6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -34,7 +39,8 @@ function createNavigationControls() {
     `;
     
     document.body.appendChild(nav);
-    nav.querySelector('.next').addEventListener('click', showNextCard);
+    nav.querySelector('.prev').addEventListener('click', () => changeCard('prev'));
+    nav.querySelector('.next').addEventListener('click', () => changeCard('next'));
 }
 
 // Animation des items de liste
@@ -49,33 +55,41 @@ function animateListItems(items) {
     });
 }
 
-// Affichage de la carte suivante
-function showNextCard() {
+// Fonction générique pour changer de carte
+function changeCard(direction) {
     if (isAnimating) return;
     isAnimating = true;
 
     const currentCard = articles[currentArticleIndex];
-    const nextIndex = (currentArticleIndex + 1) % articles.length;
+    const nextIndex = direction === 'next' 
+        ? (currentArticleIndex + 1) % articles.length
+        : (currentArticleIndex - 1 + articles.length) % articles.length;
     const nextCard = articles[nextIndex];
 
+    // Direction de l'animation
+    const exitTransform = direction === 'next' ? -100 : 100;
+    const enterTransform = direction === 'next' ? 50 : -50;
+
+    // Animation de sortie
     currentCard.style.opacity = '0';
-    currentCard.style.transform = 'translateX(-100px)';
+    currentCard.style.transform = `translateX(${exitTransform}px)`;
 
     setTimeout(() => {
         currentCard.classList.remove('active');
         currentCard.style.display = 'none';
         
+        // Préparation de la nouvelle carte
         nextCard.style.display = 'block';
-        nextCard.style.transform = 'translateX(50px)';
+        nextCard.style.transform = `translateX(${enterTransform}px)`;
         nextCard.style.opacity = '0';
         
         nextCard.offsetHeight; // Force reflow
         
+        // Animation d'entrée
         nextCard.classList.add('active');
         nextCard.style.transform = '';
         nextCard.style.opacity = '';
         
-        // Anime les items de liste seulement si ce n'est pas une carte GIF
         if (!nextCard.classList.contains('gif-card')) {
             animateListItems(nextCard.querySelectorAll('li'));
         }
@@ -85,16 +99,24 @@ function showNextCard() {
     }, 500);
 }
 
-// Support du clavier et tactile (reste identique)
+// Support du clavier
 function addKeyboardSupport() {
     document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' || e.code === 'ArrowRight') {
-            e.preventDefault();
-            showNextCard();
+        switch(e.code) {
+            case 'Space':
+            case 'ArrowRight':
+                e.preventDefault();
+                changeCard('next');
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                changeCard('prev');
+                break;
         }
     });
 }
 
+// Support tactile
 function addTouchSupport() {
     let touchStartX = 0;
     let touchEndX = 0;
@@ -114,7 +136,9 @@ function addTouchSupport() {
         
         if (Math.abs(swipeDistance) > swipeThreshold) {
             if (swipeDistance > 0) {
-                showNextCard();
+                changeCard('next');
+            } else {
+                changeCard('prev');
             }
         }
     }
